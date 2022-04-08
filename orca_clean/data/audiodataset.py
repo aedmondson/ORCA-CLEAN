@@ -181,8 +181,10 @@ class CsvSplit(object):
             working_dirs = (self.working_dir,)
         else:
             f_d_map = self._get_f_d_map(files)
-            working_dirs = [os.path.join(self.working_dir, p) for p in f_d_map.keys()]
+            working_dirs = [p for p in f_d_map.keys()]
         for working_dir in working_dirs:
+            #print(f_d_map)
+            #print(working_dirs)
             splits = self._split_with_seed(
                 files if not self.split_per_dir else f_d_map[working_dir]
             )
@@ -541,6 +543,10 @@ class Dataset(AudioDataset):
         else:
             raise "Undefined frequency compression"
 
+        # print(self.noise_files_train)
+        # print(self.noise_files_val)
+        # print(self.noise_files_test)
+
         if self.augmentation and self.noise_files_train and self.dataset_name == "train":
             self._logger.debug("Init training real-world noise files for noise2noise adding")
             self.t_addnoise = T.RandomAddNoise(
@@ -576,7 +582,7 @@ class Dataset(AudioDataset):
             )
         else:
             self.t_addnoise = None
-            raise "ERROR: Init noise files for noise adding does not have a proper setup per split!"
+            raise Exception("Init noise files for noise adding does not have a proper setup per split!")
 
         self.t_compr_a = T.Amp2Db(min_level_db=DefaultSpecDatasetOps["min_level_db"])
 

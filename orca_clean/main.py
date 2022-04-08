@@ -9,6 +9,7 @@ Last Access: 21.12.2021
 """
 
 import os
+import csv
 import json
 import math
 import pathlib
@@ -341,9 +342,15 @@ if __name__ == "__main__":
 
     audio_files = get_audio_files()
 
-    noise_files_train = [str(p) for p in pathlib.Path(ARGS.noise_dir_train).glob("*.wav")]
-    noise_files_val = [str(p) for p in pathlib.Path(ARGS.noise_dir_val).glob("*.wav")]
-    noise_files_test = [str(p) for p in pathlib.Path(ARGS.noise_dir_test).glob("*.wav")]
+    if input_data.can_load_from_csv() and ARGS.data_dir:
+        with open(os.path.join(ARGS.data_dir, "train.csv"), "r") as train, open(os.path.join(ARGS.data_dir, "val.csv"), "r") as val, open(os.path.join(ARGS.data_dir, "test.csv"), "r") as test:
+            noise_files_train = [os.path.join(ARGS.data_dir, f) for sublist in list(csv.reader(train)) for f in sublist]
+            noise_files_val = [os.path.join(ARGS.data_dir, f) for sublist in list(csv.reader(val)) for f in sublist]
+            noise_files_test = [os.path.join(ARGS.data_dir, f) for sublist in list(csv.reader(test)) for f in sublist]
+    else:
+        noise_files_train = [str(p) for p in pathlib.Path(ARGS.noise_dir_train).glob("*.wav")]
+        noise_files_val = [str(p) for p in pathlib.Path(ARGS.noise_dir_val).glob("*.wav")]
+        noise_files_test = [str(p) for p in pathlib.Path(ARGS.noise_dir_test).glob("*.wav")]
 
     random_val = ARGS.random_val
 
